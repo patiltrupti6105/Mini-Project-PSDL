@@ -26,7 +26,7 @@ ALLOWED_EXTENSIONS = {'wav'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# —— Load Your Trained Model ——————————————————————————
+# —— Load Your Trained Model —————————————————————————— 
 MODEL_PATH = 'model/voice_detector.pkl'
 model = joblib.load(MODEL_PATH)
 
@@ -58,9 +58,10 @@ def send_to_blockchain(filename: str, is_real: bool, timestamp: datetime):
     """
     predicted_label = 'REAL' if is_real else 'FAKE'
     confidence = 1 if is_real else 0
-    blockchain.create_new_block(predicted_label, confidence, prev_hash=blockchain.get_last_block()['hash'] if blockchain.chain else 'GENESIS')
+    last_block = blockchain.get_last_block()
+    prev_hash = last_block['hash'] if last_block else 'GENESIS'
+    blockchain.create_new_block(predicted_label, confidence, prev_hash)
     print(f"[BLOCKCHAIN] Stored in blockchain: {predicted_label} with confidence: {confidence}")
-
 
 # —— Routes ————————————————————————————————————————
 
@@ -120,6 +121,12 @@ def logs():
     else:
         logs = []
     return render_template('logs.html', logs=logs)
+
+@app.route('/blockchain')
+def view_blockchain():
+    """Render the blockchain data from the database."""
+    blockchain_data = blockchain.chain
+    return render_template('blockchain.html', blockchain=blockchain_data)
 
 # —— Run the App ————————————————————————————————
 if __name__ == '__main__':
