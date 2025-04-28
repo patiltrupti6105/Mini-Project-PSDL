@@ -11,6 +11,9 @@ import joblib
 
 from user_actions import log_action  # your helper to append to data/sample_alerts.json
 
+# Import the Blockchain class
+from blockchain import Blockchain
+
 # —— Flask App Configuration —————————————————————————
 app = Flask(__name__)
 
@@ -26,6 +29,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # —— Load Your Trained Model ——————————————————————————
 MODEL_PATH = 'model/voice_detector.pkl'
 model = joblib.load(MODEL_PATH)
+
+# —— Initialize Blockchain ———————————————————————————
+blockchain = Blockchain()  # Create a new blockchain instance
 
 # —— Helper Functions ——————————————————————————————
 def allowed_file(filename):
@@ -48,9 +54,13 @@ def extract_features(file_path):
 
 def send_to_blockchain(filename: str, is_real: bool, timestamp: datetime):
     """
-    BLOCKCHAIN STUB – replace this with your web3.py contract call later.
+    Add a new block to the blockchain with the prediction.
     """
-    print(f"[BLOCKCHAIN STUB] filename={filename}, is_real={is_real}, timestamp={timestamp}")
+    predicted_label = 'REAL' if is_real else 'FAKE'
+    confidence = 1 if is_real else 0
+    blockchain.create_new_block(predicted_label, confidence, prev_hash=blockchain.get_last_block()['hash'] if blockchain.chain else 'GENESIS')
+    print(f"[BLOCKCHAIN] Stored in blockchain: {predicted_label} with confidence: {confidence}")
+
 
 # —— Routes ————————————————————————————————————————
 
@@ -90,8 +100,11 @@ def upload_file():
     # 5. Log locally
     log_action(filename, label)
 
-    # 6. (Optional) Log to blockchain
-    # send_to_blockchain(filename, is_real, datetime.now())
+    # 6. Store the prediction in blockchain
+    send_to_blockchain(filename, is_real, datetime.now())
+
+    # 7. (Optional) Remove file from the server after processing to save space
+    os.remove(filepath)
 
     return redirect(url_for('index'))
 
