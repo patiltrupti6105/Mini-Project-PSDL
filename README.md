@@ -20,7 +20,7 @@ Visit `/logs` page to view detection history.
 ---
 
 Folder Structure:
-- `model/voice_detector.pkl` → trained model
+- `model/model.tflite` → trained model
 - `uploads/` → uploaded files
 - `data/sample_alerts.json` → saved logs
 - `templates/` → html pages
