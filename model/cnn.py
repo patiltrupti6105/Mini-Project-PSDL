@@ -74,7 +74,7 @@ for label in ['fake', 'real']:
     print(f"Kept {keep} WAVs in {label}")
 
 # 7. Create Image Generators for Training & Validation
-img_height, img_width = 224, 224
+img_height, img_width = 224, 224   # standard
 
 datagen = tf.keras.preprocessing.image.ImageDataGenerator(
     rescale=1./255,
@@ -98,15 +98,15 @@ val_gen = datagen.flow_from_directory(
     subset='validation'
 )
 
-# 8. Build CNN Model
-model = tf.keras.models.Sequential([
+# 8. Build CNN Model   , works on 3D tensor
+model = tf.keras.models.Sequential([    
     tf.keras.layers.Input(shape=(img_height, img_width, 3)),
     tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2, 2),
+    tf.keras.layers.MaxPooling2D(2, 2),   # dimensions half, prevents overfitting
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2, 2),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.MaxPooling2D(2, 2),   # dimension 1/4th
+    tf.keras.layers.Flatten(),  # height * width * channels
+    tf.keras.layers.Dense(64, activation='relu'), 
     tf.keras.layers.Dense(1, activation='sigmoid')
 ])
 
