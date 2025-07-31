@@ -1,7 +1,7 @@
 # Mini-Project-PSDL
 # Voice Authenticity Detection App
 
-A simple Flask web app to detect if a voice is real or fake.
+A simple Flask web app to detect if a voice is real or fake using CNN model, trained on Fake-or-Real (https://www.kaggle.com/datasets/mohammedabdeldayem/the-fake-or-real-dataset) dataset from Kaggle.
 
 ## Setup Instructions
 
